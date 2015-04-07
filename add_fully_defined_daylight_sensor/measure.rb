@@ -234,21 +234,14 @@ This measure is only intended to make it possible to use in PAT for example and 
           
       zone_space = zone.spaces[0]
       runner.registerInfo("zone_space in zone: #{zone_space.name}, handle: #{zone_space.handle}")
-      
-      # zone.spaces.each do |space|
-          # runner.registerInfo("space in zone: #{space.name}, handle: #{space.handle}")
-          # runner.registerInfo("Space class: #{space.class} \n #{space}")
-          # zone_space = space
-          
-      # end
       sensor.setSpace(zone_space)
       
-      # Assign the sensor as a Primary Daylightlighting Control to the Thermal Zone
+      # Assign the sensor as a Primary Daylighting Control to the Thermal Zone (/!\Is it really needed?)
       zone.setPrimaryDaylightingControl(sensor)
     
     else
       runner.registerWarning("Thermal zone '#{zone.name}' already had a daylighting sensor. No sensor was added.")
-    end
+    end #end if
       
 
     # Report final condition of model
@@ -256,9 +249,9 @@ This measure is only intended to make it possible to use in PAT for example and 
 
     return true
 
-  end
+  end #end run
   
-end
+end #end class
 
 # register the measure to be used by the application
 AddFullyDefinedDaylightSensor.new.registerWithApplication
