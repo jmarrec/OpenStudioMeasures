@@ -1,3 +1,16 @@
+########################
+## Selected Folders   ##
+########################
+
+/*
+!/Add PSZ-HP to all Zones/
+!/Change Airloop to DCV with VFD/
+!/add_fully_defined_daylight_sensor/
+
+######################################
+## Standard Ruby GitHub gitignore   ##
+######################################
+
 *.gem
 *.rbc
 /.config
