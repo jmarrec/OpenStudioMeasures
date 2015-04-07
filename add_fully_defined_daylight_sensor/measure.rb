@@ -149,8 +149,9 @@ This measure is only intended to make it possible to use in PAT for example and 
     if setpoint < 0 or setpoint > 9999 #dfg need input on good value
       runner.registerError("A setpoint of #{setpoint} foot-candles is outside the measure limit.")
       return false
-    elsif setpoint > 999
-      runner.registerWarning("A setpoint of #{setpoint} foot-candles is abnormally high.") #dfg need input on good value
+    elsif setpoint > 100
+      # 100 fc is a 1000 lux, that's already too high for most applications.
+      runner.registerWarning("A setpoint of #{setpoint} foot-candles is abnormally high.") 
     end
 
     #check the min_power_fraction for reasonableness
