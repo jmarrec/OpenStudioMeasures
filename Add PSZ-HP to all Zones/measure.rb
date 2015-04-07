@@ -17,14 +17,14 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
 
   def modeler_description
     return 'Add a System 4 - PSZ-HP - unit for each zone. This is a single zone system.
-    Parameters:
-    - Double: COP cooling and COP heating (Double)
-    - Boolean: supplementary electric heating coil (Boolean)
-    - Pressure rise (Optional Double)
-    - Deletion of existing HVAC equipment (Boolean)
-    - DCV enabled or not (Boolean)
-    - Fan type: Variable Volume Fan (VFD) or not (Constant Volume) (Choice)
-    - Filter for the zone name (String): only zones that contains the string you input in filter will receive this system.'
+Parameters:
+- Double: COP cooling and COP heating (Double)
+- Boolean: supplementary electric heating coil (Boolean)
+- Pressure rise (Optional Double)
+- Deletion of existing HVAC equipment (Boolean)
+- DCV enabled or not (Boolean)
+- Fan type: Variable Volume Fan (VFD) or not (Constant Volume) (Choice)
+- Filter for the zone name (String): only zones that contains the string you input in filter will receive this system.'
   end
   
   # define the arguments that the user will input
@@ -61,11 +61,6 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
     fan_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('fan_type', chs, true)
     fan_type.setDisplayName("Select fan type:")
     args << fan_type
-    
-    # has_VFD = OpenStudio::Ruleset::OSArgument::makeBoolArgument('has_VFD', false)
-    # has_VFD.setDisplayName('Include a Variable Volume Fan?')
-    # has_VFD.setDefaultValue(false)
-    # args << has_VFD
       
     fan_pressure_rise = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('fan_pressure_rise', false)
     fan_pressure_rise.setDisplayName('Fan Pressure Rise (Pa)')
@@ -75,7 +70,7 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
     
     zone_filter = OpenStudio::Ruleset::OSArgument::makeStringArgument('zone_filter', false)
     zone_filter.setDisplayName("Only Apply to Zones that contain the following string")
-    zone_filter.setDescription("Case insenstive. For example, type 'retail' to apply to zones that have the word 'retail' or 'REtaiL' in their name. Leave blank to apply to all zones")
+    zone_filter.setDescription("Case insensitive. For example, type 'retail' to apply to zones that have the word 'retail' or 'REtaiL' in their name. Leave blank to apply to all zones")
     args << zone_filter
     
     return args
@@ -98,13 +93,12 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
     has_DCV = runner.getBoolArgumentValue('has_DCV', user_arguments)
     #has_VFD = runner.getBoolArgumentValue('has_VFD', user_arguments)
     
+    #Get fan_pressure_rise: this is an OptionalDouble
     fan_pressure_rise = runner.getOptionalDoubleArgumentValue('fan_pressure_rise', user_arguments)
     if fan_pressure_rise.empty?
       fan_pressure_rise_double = 0
     else
-      runner.registerInfo("Fan pressure rise: #{fan_pressure_rise.class}")
-      fan_pressure_rise_double = OpenStudio::Double.new(fan_pressure_rise)
-      runner.registerInfo("Fan pressure rise after: #{fan_pressure_rise_double.class}")
+      fan_pressure_rise_double = fan_pressure_rise.get
     end
     
     
@@ -191,10 +185,10 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
         # Rename the fan clearly 
         fan.setName(base_name + ' Variable Volume Fan')
         
-        # If fan_pressure_rise has a non zero value, assign it
-        if fan_pressure_rise_double > 0
-          #fan.to_FanVariableVolume.get.setPressureRise(fan_pressure_rise)
-          fan.setPressureRise(fan_pressure_rise_double)
+        # If fan_pressure_rise has a non zero null value, assign it.
+        if fan_pressure_rise.empty?
+          #We need the .get because this is an OptionalDouble. the .get will return a Double (float)
+          fan.setPressureRise(fan_pressure_rise.get)
         end
         
         final_num_fan_VFD += 1
@@ -204,14 +198,13 @@ class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
         old_fan.setName(base_name + ' Constant Volume Fan')
         
         # If fan_pressure_rise has a non zero null value, assign it.
-        if fan_pressure_rise_double > 0
-          old_fan.setPressureRise(fan_pressure_rise_double)
+        if fan_pressure_rise.empty?
+          #We need the .get because this is an OptionalDouble. the .get will return a Double (float)
+          old_fan.setPressureRise(fan_pressure_rise.get)
         end
 
         
       end
-      
-      
       
       # The Cooling coil expects an OptionalDouble
       coil = air_handler.supplyComponents(OpenStudio::Model::CoilCoolingDXSingleSpeed::iddObjectType).first

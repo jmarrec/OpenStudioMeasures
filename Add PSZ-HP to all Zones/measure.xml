@@ -2,20 +2,20 @@
   <schema_version>3.0</schema_version>
   <name>add_pszhp_to_each_zone</name>
   <uid>5f126600-ca2f-4611-9121-6dfea2de49d6</uid>
-  <version_id>6556db6f-d716-4107-b806-6de089d08142</version_id>
+  <version_id>064de88b-0b78-4e11-b1f5-83fd59d90d57</version_id>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AddPSZHPToEachZone</class_name>
   <display_name>Add a PSZ-HP to each zone</display_name>
   <description>This will add a Rooftop Packaged Single Zone Heat Pump (RTU with DX cooling and DX heating coils) to each zone of the model.</description>
   <modeler_description>Add a System 4 - PSZ-HP - unit for each zone. This is a single zone system.
-    Parameters:
-    - Double: COP cooling and COP heating (Double)
-    - Boolean: supplementary electric heating coil (Boolean)
-    - Pressure rise (Optional Double)
-    - Deletion of existing HVAC equipment (Boolean)
-    - DCV enabled or not (Boolean)
-    - Fan type: Variable Volume Fan (VFD) or not (Constant Volume) (Choice)
-    - Filter for the zone name (String): only zones that contains the string you input in filter will receive this system.</modeler_description>
+Parameters:
+- Double: COP cooling and COP heating (Double)
+- Boolean: supplementary electric heating coil (Boolean)
+- Pressure rise (Optional Double)
+- Deletion of existing HVAC equipment (Boolean)
+- DCV enabled or not (Boolean)
+- Fan type: Variable Volume Fan (VFD) or not (Constant Volume) (Choice)
+- Filter for the zone name (String): only zones that contains the string you input in filter will receive this system.</modeler_description>
   <arguments>
     <argument>
       <name>delete_existing</name>
@@ -114,7 +114,7 @@
     <argument>
       <name>zone_filter</name>
       <display_name>Only Apply to Zones that contain the following string</display_name>
-      <description>Case insenstive. For example, type 'retail' to apply to zones that have the word 'retail' or 'REtaiL' in their name. Leave blank to apply to all zones</description>
+      <description>Case insensitive. For example, type 'retail' to apply to zones that have the word 'retail' or 'REtaiL' in their name. Leave blank to apply to all zones</description>
       <type>String</type>
       <required>false</required>
       <model_dependent>false</model_dependent>
@@ -146,7 +146,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>7C52E139</checksum>
+      <checksum>F2B620EC</checksum>
     </file>
   </files>
 </measure>
