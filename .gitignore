@@ -4,7 +4,7 @@
 
 /*
 !/Add PSZ-HP to all Zones/
-!/Change Airloop to DCV with VFD/
+!/enable_dcv_and_vfd_fan/
 !/add_fully_defined_daylight_sensor/
 
 ######################################
