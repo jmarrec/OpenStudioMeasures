@@ -4,7 +4,8 @@ This my personal github repository for the OpenStudio Measures I create.
 
 So far I have added:
 
-* Add PSZ-HP to All Zones: this is most advanced measure so far
+* Add PSZ-HP to All Zones: this is my most advanced measure so far
+	* Need to add description
 * Add Fully defined Daylighting Sensor
 * Enable DCV and switch central Constant Volume Fan to Variable Volume Fan (VFD)
 * Purge Unused Design Specification Outdoor Air
