@@ -6,7 +6,7 @@ So far I have added:
 
 * Add PSZ-HP to All Zones: this is most advanced measure so far
 * Add Fully defined Daylighting Sensor
-* Enable DCV and switch central Contant Volume Fan to Variable Volume Fan (VFD)
+* Enable DCV and switch central Constant Volume Fan to Variable Volume Fan (VFD)
 * Purge Unused Design Specification Outdoor Air
     * with an optional string filter: only applies to DSOAs where name includes the specified string
 * Append Suffix to Thermal Zone Name
