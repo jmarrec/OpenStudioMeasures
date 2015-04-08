@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>add_fully_defined_daylight_sensor</name>
   <uid>182f9bb1-68cf-4b28-bcad-7c6749e1961b</uid>
-  <version_id>4b2d7495-9047-4d9f-9cd3-b78ff1b0e4b8</version_id>
+  <version_id>4ada161d-7da1-461e-8dda-3eee72a0a862</version_id>
   <xml_checksum>81C5D8E7</xml_checksum>
   <class_name>AddFullyDefinedDaylightSensor</class_name>
   <display_name>Add Fully Defined Daylight Sensor to a zone</display_name>
@@ -148,7 +148,7 @@ This measure is only intended to make it possible to use in PAT for example and 
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>97491085</checksum>
+      <checksum>CADFDCC5</checksum>
     </file>
   </files>
 </measure>

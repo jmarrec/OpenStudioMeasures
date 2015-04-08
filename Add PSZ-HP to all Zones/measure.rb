@@ -35,14 +35,14 @@ Parameters:
     delete_existing.setDisplayName('Delete any existing HVAC equipment?')
     args << delete_existing
     
-    cop_cooling = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_cooling', false)
+    cop_cooling = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_cooling', true)
     cop_cooling.setDisplayName('COP cooling (SI)')
-    cop_cooling.setDefaultValue(3.0)
+    cop_cooling.setDefaultValue(3.1)
     args << cop_cooling
 
-    cop_heating = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_heating',  false)
+    cop_heating = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_heating',  true)
     cop_heating.setDisplayName('COP cooling (SI)')
-    cop_heating.setDefaultValue(3.0)
+    cop_heating.setDefaultValue(3.1)
     args << cop_heating
 	
     has_electric_coil = OpenStudio::Ruleset::OSArgument::makeBoolArgument('has_electric_coil', false)
@@ -103,11 +103,11 @@ Parameters:
     
     
     #fan_pressure_rise = runner.getDoubleArgumentValue('fan_pressure_rise', user_arguments)
-    runner.registerInfo("Fan pressure rise: #{fan_pressure_rise}")
+    runner.registerInfo("Fan pressure rise: #{fan_pressure_rise_double} Pa")
     
     # FanType
     fan_type = runner.getStringArgumentValue('fan_type', user_arguments)
-    runner.registerInfo(fan_type)
+    runner.registerInfo("Fan type: #{fan_type}")
     if fan_type == 'Variable Volume (VFD)'
       has_VFD = true
     else
@@ -117,9 +117,7 @@ Parameters:
     
     # Zone filter
     zone_filter = runner.getOptionalStringArgumentValue('zone_filter', user_arguments)
-    runner.registerInfo("zone filter : is empty: #{zone_filter.empty?} , value #{zone_filter}, class #{zone_filter.class}")
     new_string = zone_filter.to_s
-    runner.registerInfo("zone filter new : is empty: #{new_string.empty?} , value #{new_string}, class #{new_string.class}")
     
     #info for initial condition
     initial_num_air_loops_demand_control = 0
@@ -186,9 +184,10 @@ Parameters:
         fan.setName(base_name + ' Variable Volume Fan')
         
         # If fan_pressure_rise has a non zero null value, assign it.
-        if fan_pressure_rise.empty?
+        if !fan_pressure_rise.empty?
           #We need the .get because this is an OptionalDouble. the .get will return a Double (float)
           fan.setPressureRise(fan_pressure_rise.get)
+          runner.registerInfo("Fan '#{fan.name}' was assigned pressure rise of '#{fan_pressure_rise.get}' Pa")
         end
         
         final_num_fan_VFD += 1
@@ -198,9 +197,10 @@ Parameters:
         old_fan.setName(base_name + ' Constant Volume Fan')
         
         # If fan_pressure_rise has a non zero null value, assign it.
-        if fan_pressure_rise.empty?
+        if !fan_pressure_rise.empty?
           #We need the .get because this is an OptionalDouble. the .get will return a Double (float)
           old_fan.setPressureRise(fan_pressure_rise.get)
+          runner.registerInfo("Fan '#{old_fan.name}' was assigned pressure rise of '#{fan_pressure_rise.get}' Pa")
         end
 
         
