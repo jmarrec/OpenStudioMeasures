@@ -9,6 +9,7 @@ So far I have added:
 * Enable DCV and switch central Contant Volume Fan to Variable Volume Fan (VFD)
 * Purge Unused Design Specification Outdoor Air
     * with an optional string filter: only applies to DSOAs where name includes the specified string
-
+* Append Suffix to Thermal Zone Name
+	* User can specify if affect thermal zones should either INCLUDE or NOT INCLUDE the searched string
 
 ### Forking and Pull requests are welcomed!

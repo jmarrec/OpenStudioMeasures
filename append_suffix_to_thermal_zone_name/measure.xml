@@ -1,0 +1,96 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>append_suffix_to_thermal_zone_name</name>
+  <uid>362095ff-c424-4b72-aad1-7fd0a9018be1</uid>
+  <version_id>9a0a30d0-4510-4a26-beff-a9978662f1f3</version_id>
+  <xml_checksum>D8922A73</xml_checksum>
+  <class_name>AppendSuffixToThermalZoneName</class_name>
+  <display_name>Append suffix to Thermal Zone name</display_name>
+  <description>Append  suffix to thermal zone names that match or don't match a search string</description>
+  <modeler_description>Loop through all thermal zones, and append a user-specified suffix to thermal zone names that either match or don't match a search string</modeler_description>
+  <arguments>
+    <argument>
+      <name>match_type</name>
+      <display_name>Affect only thermal zones that include/don't include the searched string</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <choices>
+        <choice>
+          <value>include</value>
+          <display_name>include</display_name>
+        </choice>
+        <choice>
+          <value>don't include</value>
+          <display_name>don't include</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>search_str</name>
+      <display_name>Type the searched string you want search for in thermal zone names</display_name>
+      <description>Case insensitive. For example, type 'retail' to apply to thermal zones names that have the word 'retail' or 'RETAIL' in their name.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>suffix_str</name>
+      <display_name>Type the suffix you want to add to the thermal zone names</display_name>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Space Types</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>append_suffix_to_thermal_zone_name_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>CCAA9278</checksum>
+    </file>
+    <file>
+      <filename>example_model.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>C4F35230</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.7.0</identifier>
+        <min_compatible>1.7.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>5D06DB94</checksum>
+    </file>
+  </files>
+</measure>

@@ -7,6 +7,7 @@
 !/enable_dcv_and_vfd_fan/
 !/add_fully_defined_daylight_sensor/
 !/purge_unused_design_specification_outside_air/
+!/append_suffix_to_thermal_zone_name/
 
 ######################################
 ## Standard Ruby GitHub gitignore   ##
