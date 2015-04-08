@@ -125,9 +125,9 @@ Parameters:
     # They will be used for clean up at the end
     if delete_existing
       air_loops = model.getAirLoopHVACs
-      runner.registerInfo("Class of air_loops: #{air_loops.class}")
+      runner.registerInfo("Number of initial AirLoopHVACs: #{air_loops.size}")
       plant_loops = model.getPlantLoops
-      runner.registerInfo("Class of plant_loops: #{plant_loops.class}")
+      runner.registerInfo("Number of initial PlantLoops: #{plant_loops.size}")
     end
 
     # Get all thermal zones
@@ -201,14 +201,18 @@ Parameters:
       # The Cooling coil expects an OptionalDouble
       coil = air_handler.supplyComponents(OpenStudio::Model::CoilCoolingDXSingleSpeed::iddObjectType).first
       coil = coil.to_CoilCoolingDXSingleSpeed.get
+      # Set CoolingCoil COP
       coil.setRatedCOP(OpenStudio::OptionalDouble.new(cop_cooling))
+      # Set CoolingCoil Name
       coil.setName(base_name + " Coil Cooling DX Single Speed")
       
       
       # The Heating coil expects a Double
       coilheating = air_handler.supplyComponents(OpenStudio::Model::CoilHeatingDXSingleSpeed::iddObjectType).first
       coilheating = coilheating.to_CoilHeatingDXSingleSpeed.get
+      # Set HeatingCoil COP
       coilheating.setRatedCOP(cop_heating)
+      # Set HeatingCoil Name
       coilheating.setName(base_name + " Coil Heating DX Single Speed")
       
       # Delete the electric heating coil if unwanted
@@ -355,12 +359,8 @@ Parameters:
 
         # If deletion is warranted
         if delete_flag
-          # Now we can delete and report.
-          chiller_plant_loop.remove
-          runner.registerInfo("DELETED: Chiller PlantLoop '#{chiller_plant_loop.name}' wasn't connected to any AirLoopHVAC nor WaterUseConnections and therefore was removed")
-          delete_existing_chiller_loops += 1
+
           #This section below is actually optional (and not working) but could be nice to only delete affected ones
-=begin
           #before deletion, let's get the potential associated condenser water plant loop.
           if chiller_plant_loop.supplyComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).empty?
             runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE an electric chiller")
@@ -369,15 +369,58 @@ Parameters:
             runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' has an electric chiller '#{chiller.name}' with condenser type '#{chiller.condenserType}'")
             if chiller.condenserType == 'WaterCooled'
               # Chiller is WaterCooled therefore should be connected to a condenser water loop
+              # runner.registerInfo("PlantLoop: #{chiller.loop.get}")
             end
           end
-=end
+
+          # Now we can delete and report.
+          chiller_plant_loop.remove
+          delete_existing_chiller_loops += 1
+          #Should I delete the chiller as well? It remains...
+
+          runner.registerInfo("DELETED: Chiller PlantLoop '#{chiller_plant_loop.name}' wasn't connected to any AirLoopHVAC nor WaterUseConnections and therefore was removed")
+
         end #end of delete_flag
 
       end #end of chiller_plant_loops.each do
 
       #Second pass on plant loops: condenser water loops.
-      # TO WRITE
+      #
+      plant_loops.each do |plant_loop|
+        # Skip the chiller_plant_loops
+        #next if chiller_plant_loops.include? plant_loop
+        if chiller_plant_loops.include? plant_loop
+          runner.registerInfo("Skipping Plant loop '#{plant_loop.name}' because it is a chiller plant")
+          next
+        end
+        runner.registerInfo("Plant loop '#{plant_loop.name}'")
+
+        # Until we know that it is a condenser loop for sure, we assume we can't delete it
+        delete_flag = false
+
+        # If it has got a chiller as a demand component, it's a condenser water loop
+        if not plant_loop.demandComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).empty?
+          # Now, we assume we'll delete the loop unless it's actually connected and therefore usefull
+          delete_flag = true
+          chiller = plant_loop.demandComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).first.to_ChillerElectricEIR.get
+          # If chiller is actually connected to a chilled water node, then we shall not delete it
+          if not chiller.chilledWaterInletNodeName.empty?
+            runner.registerInfo("On Condenser PlantLoop '#{plant_loop.name}, there is a demand component of type Chiller '#{chiller.name}'" +
+                                  " that is connected to a chilled water loop and therefore cannot be deleted")
+            delete_flag = false
+          else
+            runner.registerInfo("Plant loop '#{plant_loop.name}, Chiller '#{chiller.name}' isn't connected to a chilled water loop")
+          end
+        end #end of if has chillerelectricEIR
+
+        # if deletion is warranted
+        if delete_flag
+          plant_loop.remove
+          delete_existing_condenser_loops += 1
+          runner.registerInfo("DELETED: Plant loop '#{plant_loop.name}'")
+        end
+
+      end #end of plant_loops.each do
 
       #Third pass on plant loops: boiler water loops.
       # TO WRITE

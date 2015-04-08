@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>add_pszhp_to_each_zone</name>
   <uid>5f126600-ca2f-4611-9121-6dfea2de49d6</uid>
-  <version_id>42443450-0ff9-49b1-b50f-3037e4817808</version_id>
+  <version_id>e8cd0262-d2ce-4842-8c19-ff57c04f8683</version_id>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AddPSZHPToEachZone</class_name>
   <display_name>Add a PSZ-HP to each zone</display_name>
@@ -146,7 +146,7 @@ Parameters:
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>F750E4D4</checksum>
+      <checksum>92BB3096</checksum>
     </file>
   </files>
 </measure>
