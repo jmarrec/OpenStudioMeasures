@@ -6,6 +6,7 @@
 !/Add PSZ-HP to all Zones/
 !/enable_dcv_and_vfd_fan/
 !/add_fully_defined_daylight_sensor/
+!/purge_unused_design_specification_outside_air/
 
 ######################################
 ## Standard Ruby GitHub gitignore   ##
