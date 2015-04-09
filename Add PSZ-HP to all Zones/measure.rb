@@ -192,7 +192,7 @@ Parameters:
         if !fan_pressure_rise.empty?
           #We need the .get because this is an OptionalDouble. the .get will return a Double (float)
           old_fan.setPressureRise(fan_pressure_rise.get)
-          runner.registerInfo("Fan '#{old_fan.name}' was assigned pressure rise of '#{fan_pressure_rise.get}' Pa")
+          puts "Fan '#{old_fan.name}' was assigned pressure rise of '#{fan_pressure_rise.get}' Pa"
         end
 
         
@@ -245,7 +245,7 @@ Parameters:
               initial_num_air_loops_demand_control += 1
             else
               controller_mv.setDemandControlledVentilation(true)
-              runner.registerInfo("Enabling demand control ventilation for #{air_handler.name}")
+              puts "Enabling demand control ventilation for #{air_handler.name}"
             end #End of if 
             final_num_air_loops_demand_control += 1
             
@@ -272,8 +272,16 @@ Parameters:
     #If we need to delete existing HVAC loops, we'll loop on the PRE-EXISTING Loops we stored earlier
     if delete_existing
 
+
+      # Arrays to store the affected loops
       chiller_plant_loops = []
       boiler_plant_loops = []
+      condenser_plant_loops = []
+
+
+      # Display separator for clarity
+      runner.registerInfo("")
+      runner.registerInfo("========================== CLEAN-UP: AIR LOOPS ==========================")
 
       # Loop on the pre-existing air loops (not the ones that were created above)
       air_loops.each do |air_loop|
@@ -293,7 +301,7 @@ Parameters:
         if delete_flag
           #before deletion, let's get the potential associated plant loop.
           if air_loop.supplyComponents(OpenStudio::Model::CoilCoolingWater::iddObjectType).empty?
-            runner.registerInfo("Air loop '#{air_loop.name}' DOES NOT HAVE a CoilHeatingWater")
+            puts "Air loop '#{air_loop.name}' DOES NOT HAVE a CoilHeatingWater"
           else
             cooling_coil = air_loop.supplyComponents(OpenStudio::Model::CoilCoolingWater::iddObjectType).first.to_CoilCoolingWater.get
             chiller_plant_loop = cooling_coil.plantLoop.get
@@ -302,7 +310,7 @@ Parameters:
             runner.registerInfo("Air loop '#{air_loop.name}' has a CoilCoolingWater, connected to CHILLER plant loop '#{chiller_plant_loop.name }'")
           end
           if air_loop.supplyComponents(OpenStudio::Model::CoilHeatingWater::iddObjectType).empty?
-            runner.registerInfo("Air loop '#{air_loop.name}' DOES NOT HAVE a CoilHeatingWater")
+            puts "Air loop '#{air_loop.name}' DOES NOT HAVE a CoilHeatingWater"
           else
             heating_coil = air_loop.supplyComponents(OpenStudio::Model::CoilCoolingWater::iddObjectType).first.to_CoilCoolingWater.get
             boiler_plant_loop = heating_coil.plantLoop.get
@@ -316,17 +324,20 @@ Parameters:
           runner.registerInfo("DELETED: Air loop '#{air_loop.name}' doesn't have Thermal zones attached and was removed")
           delete_existing_air_loops += 1
         else
-          runner.registerInfo("This air loop '#{air_loop.name}' has thermal zones and was not deleted")
+          runner.registerInfo("Air Loop '#{air_loop.name}' has thermal zones and was not deleted")
         end #end if delete_flag
       end #end air_loops.each do
 
 
-      runner.registerInfo("FINISHED AIR LOOPS, MOVING TO PLANT LOOPS")
+
+      # Display separator for clarity
+      runner.registerInfo("")
+      runner.registerInfo("====================== CLEAN-UP: CHILLER PLANT LOOPS ======================")
 
       #First pass on plant loops: chilled water loops.
       chiller_plant_loops.each do |chiller_plant_loop|
 
-        runner.registerInfo("Chiller plant loop name: #{chiller_plant_loop.name}")
+        puts "Chiller plant loop name: #{chiller_plant_loop.name}"
 
         # Check if the chiller plant loop has remaining demand components
 
@@ -334,12 +345,12 @@ Parameters:
         delete_flag = true
 
         if chiller_plant_loop.demandComponents(OpenStudio::Model::CoilCoolingWater::iddObjectType).empty?
-          runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE a CoilCoolingWater")
+          puts "Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE a CoilCoolingWater"
         else
-          runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' has a CoilCoolingWater")
+          puts "Chiller Plant loop '#{chiller_plant_loop.name}' has a CoilCoolingWater"
           cooling_coil = chiller_plant_loop.demandComponents(OpenStudio::Model::CoilCoolingWater::iddObjectType).first.to_CoilCoolingWater.get
           if cooling_coil.airLoopHVAC.empty?
-            runner.registerInfo("But Cooling coil '#{cooling_coil.name}' is not connected to any airloopHVAC")
+            puts "But Cooling coil '#{cooling_coil.name}' is not connected to any airloopHVAC"
           else
             runner.registerInfo("And Cooling coil '#{cooling_coil.name}' is connected to airloopHVAC '#{cooling_coil.airLoopHVAC.get.name}' and therefore can't be deleted")
             # In this case, we can't delete the chiller plant loop
@@ -350,7 +361,7 @@ Parameters:
 
         # We know it's a chiller plant so this is likely unnecessary, but better safe than sorry
         if chiller_plant_loop.demandComponents(OpenStudio::Model::WaterUseConnections::iddObjectType).empty?
-          runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE WaterUseConnections")
+          puts "Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE WaterUseConnections"
         else
           runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' has WaterUseConnections and therefore can't be deleted")
           delete_flag = false
@@ -360,16 +371,19 @@ Parameters:
         # If deletion is warranted
         if delete_flag
 
-          #This section below is actually optional (and not working) but could be nice to only delete affected ones
+          #This section below is actually optional (but it's nice to only delete affected ones
           #before deletion, let's get the potential associated condenser water plant loop.
           if chiller_plant_loop.supplyComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).empty?
-            runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE an electric chiller")
+           puts "Chiller Plant loop '#{chiller_plant_loop.name}' DOES NOT HAVE an electric chiller"
           else
             chiller = chiller_plant_loop.supplyComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).first.to_ChillerElectricEIR.get
-            runner.registerInfo("Chiller Plant loop '#{chiller_plant_loop.name}' has an electric chiller '#{chiller.name}' with condenser type '#{chiller.condenserType}'")
-            if chiller.condenserType == 'WaterCooled'
+            puts "Chiller Plant loop '#{chiller_plant_loop.name}' has an electric chiller '#{chiller.name}' with condenser type '#{chiller.condenserType}'"
+            # Check directly if chiller has a secondaryPlantLoop (no need to check if chiller.condenserType == 'WaterCooled' first)
+            if chiller.secondaryPlantLoop.is_initialized
               # Chiller is WaterCooled therefore should be connected to a condenser water loop
-              # runner.registerInfo("PlantLoop: #{chiller.loop.get}")
+              condenser_plant_loop = chiller.secondaryPlantLoop.get
+              condenser_plant_loops << condenser_plant_loop
+              runner.registerInfo("Chiller PlantLoop '#{chiller_plant_loop.name}' has a Water Cooled chiller connected to Condenser Plant Loop '#{condenser_plant_loop.name }'")
             end
           end
 
@@ -384,8 +398,44 @@ Parameters:
 
       end #end of chiller_plant_loops.each do
 
+      # Display separator for clarity
+      runner.registerInfo("")
+      runner.registerInfo("===================== CLEAN-UP: CONDENSER PLANT LOOPS ====================")
       #Second pass on plant loops: condenser water loops.
-      #
+      condenser_plant_loops.each do |condenser_plant_loop|
+
+        delete_flag = true
+
+        # If it has got a chiller as a demand component, it could still be empty
+        if not condenser_plant_loop.demandComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).empty?
+
+          chiller = condenser_plant_loop.demandComponents(OpenStudio::Model::ChillerElectricEIR::iddObjectType).first.to_ChillerElectricEIR.get
+
+          # If chiller is actually connected to a chilled water node, then we shall not delete it
+          if not chiller.chilledWaterInletNodeName.empty?
+            runner.registerInfo("On Condenser PlantLoop '#{condenser_plant_loop.name}, there is a demand component of type Chiller '#{chiller.name}'" +
+                                    " that is connected to a chilled water loop and therefore cannot be deleted")
+            delete_flag = false
+          else
+            puts "Plant loop '#{condenser_plant_loop.name}, Chiller '#{chiller.name}' isn't connected to a chilled water loop"
+          end #end of if chiller.chilledWaterInletNodeName
+        end #end of plant_loop.demandComponents
+
+        # if deletion is warranted
+        if delete_flag
+          condenser_plant_loop.remove
+          delete_existing_condenser_loops += 1
+          runner.registerInfo("DELETED: Plant loop '#{condenser_plant_loop.name}' isn't connected to any chilled water loop")
+        end
+
+
+      end
+
+      runner.registerInfo("")
+      runner.registerInfo("For more information, go to 'Advanced Output'")
+
+      # This is the generic way of looping on all loops, checking if it's a condenser plant loop, and to delete it unless it's got a chiller that is connected to chilled water plant loop
+=begin
       plant_loops.each do |plant_loop|
         # Skip the chiller_plant_loops
         #next if chiller_plant_loops.include? plant_loop
@@ -410,8 +460,8 @@ Parameters:
             delete_flag = false
           else
             runner.registerInfo("Plant loop '#{plant_loop.name}, Chiller '#{chiller.name}' isn't connected to a chilled water loop")
-          end
-        end #end of if has chillerelectricEIR
+          end #end of if chiller.chilledWaterInletNodeName
+        end #end of plant_loop.demandComponents
 
         # if deletion is warranted
         if delete_flag
@@ -421,6 +471,7 @@ Parameters:
         end
 
       end #end of plant_loops.each do
+=end
 
       #Third pass on plant loops: boiler water loops.
       # TO WRITE
@@ -430,18 +481,19 @@ Parameters:
 
     #Report Initial Condition
     if delete_existing
-      air_loop_str = "#{delete_existing_air_loops} existing AirLoopHVACs have been deleted"
-      chiller_plant_loop_str = "#{delete_existing_chiller_loops} existing Chiller PlantLoops have been deleted"
-      condenser_plant_loop_str = "#{delete_existing_condenser_loops} existing Condenser PlantLoops have been deleted"
-      runner.registerInitialCondition(air_loop_str + "\n" + chiller_plant_loop_str + "\n" + condenser_plant_loop_str)
-    else
-      runner.registerInitialCondition("Initially #{initial_num_air_loops_demand_control} air loops had demand controlled ventilation enabled.")
+      air_loop_str = "\n #{delete_existing_air_loops} existing AirLoopHVACs have been deleted"
+      chiller_plant_loop_str = "\n #{delete_existing_chiller_loops} existing Chiller PlantLoops have been deleted"
+      condenser_plant_loop_str = "\n #{delete_existing_condenser_loops} existing Condenser PlantLoops have been deleted"
     end #end of delete_existing
-    
+      runner.registerInitialCondition("Initially #{initial_num_air_loops_demand_control} air loops had demand controlled ventilation enabled" +
+                                          air_loop_str + chiller_plant_loop_str + condenser_plant_loop_str + "\n")
+
     
     
     # Report final condition
-    base_str = "There are #{OpenStudio::toNeatString(affected_loops, 0, true)} zones for which a PSZ-HP system was created with a Cooling COP (SI) of #{OpenStudio::toNeatString(cop_cooling, 2, true)} and a Heating COP (SI) of #{OpenStudio::toNeatString(cop_heating, 2, true)}."
+    base_str = "There are #{OpenStudio::toNeatString(affected_loops, 0, true)} zones for which a PSZ-HP system was " +
+        "created with a Cooling COP (SI) of #{OpenStudio::toNeatString(cop_cooling, 2, true)} " +
+        "and a Heating COP (SI) of #{OpenStudio::toNeatString(cop_heating, 2, true)}."
     
     if has_electric_coil
       elec_str = "Supplementary electric heating coils were added."
@@ -461,7 +513,7 @@ Parameters:
       dcv_str = "#{final_num_air_loops_demand_control} air loops now have demand controlled ventilation enabled"
     end
     
-    runner.registerFinalCondition(base_str + "\n" + elec_str + "\n" + fan_str + "\n" + dcv_str)
+    runner.registerFinalCondition(base_str + "\n" + elec_str + "\n" + fan_str + "\n" + dcv_str + "\n \n")
     
     return true
     
