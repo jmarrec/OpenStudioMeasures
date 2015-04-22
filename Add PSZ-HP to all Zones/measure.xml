@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>add_pszhp_to_each_zone</name>
   <uid>5f126600-ca2f-4611-9121-6dfea2de49d6</uid>
-  <version_id>52a8af5b-dd43-4e13-a359-ae07dc1abd68</version_id>
+  <version_id>c4eedd9d-6799-4aee-aa05-248fcd10c46b</version_id>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AddPSZHPToEachZone</class_name>
   <display_name>Add a PSZ-HP to each zone</display_name>
@@ -36,7 +36,7 @@ Parameters:
     </argument>
     <argument>
       <name>cop_cooling</name>
-      <display_name>COP cooling (SI)</display_name>
+      <display_name>COP Cooling (SI)</display_name>
       <type>Double</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -44,7 +44,7 @@ Parameters:
     </argument>
     <argument>
       <name>cop_heating</name>
-      <display_name>COP cooling (SI)</display_name>
+      <display_name>COP Heating (SI)</display_name>
       <type>Double</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -146,7 +146,7 @@ Parameters:
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>33D1D3C4</checksum>
+      <checksum>0B9B8067</checksum>
     </file>
   </files>
 </measure>

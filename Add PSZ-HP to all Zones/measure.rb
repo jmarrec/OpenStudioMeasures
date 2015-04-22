@@ -36,12 +36,12 @@ Parameters:
     args << delete_existing
     
     cop_cooling = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_cooling', true)
-    cop_cooling.setDisplayName('COP cooling (SI)')
+    cop_cooling.setDisplayName('COP Cooling (SI)')
     cop_cooling.setDefaultValue(3.1)
     args << cop_cooling
 
     cop_heating = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_heating',  true)
-    cop_heating.setDisplayName('COP cooling (SI)')
+    cop_heating.setDisplayName('COP Heating (SI)')
     cop_heating.setDefaultValue(3.1)
     args << cop_heating
 	
