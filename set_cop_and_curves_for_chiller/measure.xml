@@ -1,0 +1,107 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>set_cop_and_curves_for_chiller</name>
+  <uid>351fe844-d64c-4405-a340-4145696b1dac</uid>
+  <version_id>7c28bb43-1756-466a-a26d-1c2a54d5b164</version_id>
+  <xml_checksum>D48F381B</xml_checksum>
+  <class_name>SetCOPAndCurvesForChiller</class_name>
+  <display_name>Set COP and Curves for Chiller</display_name>
+  <description>Set COP and Curves for Chiller</description>
+  <modeler_description>So far it will only look for chillers of type Chiller:Electric:EIR.
+Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT and CAPFT a biquadratic or bicubic, but modifying it is easy</modeler_description>
+  <arguments>
+    <argument>
+      <name>chiller</name>
+      <display_name>Select the Chiller you want to affect</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <choices>
+        <choice>
+          <value>All</value>
+          <display_name>All of them</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>cop_cooling</name>
+      <display_name>COP Cooling (SI)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>5.5</default_value>
+    </argument>
+    <argument>
+      <name>eirfplr_curve</name>
+      <display_name>Select the quadratic curve you want to use for EIRFPLR</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>eirft_curve</name>
+      <display_name>Select the quadratic curve you want to use for EIRFT</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>capft_curve</name>
+      <display_name>Select the quadratic curve you want to use for CAPFT</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>HVAC.Cooling</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>set_cop_and_curves_for_chiller_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>CE0951DB</checksum>
+    </file>
+    <file>
+      <filename>example_model.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>C4F35230</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.8.0</identifier>
+        <min_compatible>1.8.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>EDC052A3</checksum>
+    </file>
+  </files>
+</measure>
