@@ -67,9 +67,52 @@ Parameters:
     fan_pressure_rise.setDescription('Leave blank for default value')
     #fan_pressure_rise.setDefaultValue(0)
     args << fan_pressure_rise
-    
+
+
+    chs = OpenStudio::StringVector.new
+    chs << "By Space Type"
+    chs << "By Space Type's 'Standards Space Type'"
+    chs << "By Zone Filter"
+    filter_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('filter_type', chs, true)
+    filter_type.setDisplayName("How do you want to choose the affected zones?")
+    args << filter_type
+
+    # create an argument for a space type to be used in the model. Only return those that are used
+    spaceTypes = model.getSpaceTypes
+    usedSpaceTypes_handle = OpenStudio::StringVector.new
+    usedSpaceTypes_displayName = OpenStudio::StringVector.new
+
+    # Should normally be an OpenStudio::StringVector.new but it doesn't have a uniq! method and it works with a regular hash..
+    standardsSpaceType = []
+
+    spaceTypes.each do |spaceType|
+      if spaceType.spaces.size > 0 # only show space types used in the building
+        usedSpaceTypes_handle << spaceType.handle.to_s
+        usedSpaceTypes_displayName << spaceType.name.to_s
+
+        if not spaceType.standardsSpaceType.empty?
+          standardsSpaceType << spaceType.standardsSpaceType.get
+        end
+      end
+    end
+
+    # make an argument for space type
+    space_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("space_type", usedSpaceTypes_handle, usedSpaceTypes_displayName,false)
+    space_type.setDisplayName("a. Which Space Type?")
+    args << space_type
+
+
+
+    # Argument for Standards Space Type
+
+    # First, make it unique
+    standardsSpaceType.uniq!
+    standards_space_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('standards_space_type', standardsSpaceType, false)
+    standards_space_type.setDisplayName("b. Which Standards Space Type")
+    args << standards_space_type
+
     zone_filter = OpenStudio::Ruleset::OSArgument::makeStringArgument('zone_filter', false)
-    zone_filter.setDisplayName("Only Apply to Zones that contain the following string")
+    zone_filter.setDisplayName("c. Only Apply to Zones that contain the following string")
     zone_filter.setDescription("Case insensitive. For example, type 'retail' to apply to zones that have the word 'retail' or 'REtaiL' in their name. Leave blank to apply to all zones")
     args << zone_filter
     
@@ -103,13 +146,83 @@ Parameters:
       has_vfd = true
     else
       has_vfd = false
-    end    
-    
-    
-    # Zone filter
-    zone_filter = runner.getOptionalStringArgumentValue('zone_filter', user_arguments)
-    new_string = zone_filter.to_s
-    
+    end
+
+    filter_type = runner.getStringArgumentValue("filter_type",user_arguments)
+
+    if filter_type == "By Space Type"
+      space_type = runner.getOptionalWorkspaceObjectChoiceValue("space_type",user_arguments,model)
+      if not space_type.empty?
+        space_type = space_type.get
+        if not space_type.to_SpaceType.empty?
+          space_type = space_type.get
+          zones = []
+          space_type.spaces.each do |space|
+            if not space.thermalZone.empty?
+              z = space.thermalZone.get
+              zones << z
+            end
+          end
+        end
+      end
+
+    elsif filter_type == "By Space Type's 'Standards Space Type'"
+
+      standards_space_type = runner.getOptionalStringArgumentValue("standards_space_type", user_arguments)
+      puts standards_space_type.class
+
+      if not standards_space_type.empty?
+        standards_space_type = standards_space_type.get
+        puts standards_space_type
+        space_types = model.getSpaceTypes
+
+        zones = []
+
+        space_types.each do |space_type|
+          if space_type.standardsSpaceType.to_s.upcase == standards_space_type.upcase
+            space_type.spaces.each do |space|
+              if not space.thermalZone.empty?
+                z = space.thermalZone.get
+                # We MUST check if zone isn't in there yet (or at the end do zones.uniq!) because several spaces can refer to the same thermal zone!
+                if not zones.include?(z)
+                  zones << z
+                end
+              end
+            end
+          end
+        end
+      end
+
+    else
+      # Zone filter
+      zone_filter = runner.getOptionalStringArgumentValue('zone_filter', user_arguments)
+
+      # Get all thermal zones
+      all_zones = model.getThermalZones
+
+      # Array to store the zones that match the filter
+      zones = []
+      all_zones.each do |z|
+        # Skip zone if name doesn't include zone_filter
+        # Putting everything in Upper Case to make it case insensitive
+        if !zone_filter.empty?
+          if z.name.to_s.upcase.include? zone_filter.to_s.upcase
+            zones << z
+          end
+        end
+      end
+
+
+
+    end # End of if filter_type
+
+
+    # Output zone names to console
+    puts "\n\n================ ZONES THAT MATCHED THE FILTER ================\n"
+    zones.each do |z|
+      puts z.name
+    end
+
     #info for initial condition
     initial_num_air_loops_demand_control = 0
     final_num_air_loops_demand_control = 0
@@ -130,17 +243,10 @@ Parameters:
       runner.registerInfo("Number of initial PlantLoops: #{plant_loops.size}")
     end
 
-    # Get all thermal zones
-    zones = model.getThermalZones
 
-    # For each thermal zones
+
+    # For each thermal zones (zones is initialized above, depending on which filter you chose)
     zones.each do |z|
-    
-      # Skip zone if name doesn't include zone_filter
-      # Putting everything in Upper Case to make it case insensitive
-      if !zone_filter.empty?
-        next if not z.name.to_s.upcase.include? zone_filter.to_s.upcase
-      end
       
       # Create a system 4 (PSZ-HP)
       air_handler = OpenStudio::Model::addSystemType4(model).to_AirLoopHVAC.get
@@ -484,8 +590,13 @@ Parameters:
       air_loop_str = "\n #{delete_existing_air_loops} existing AirLoopHVACs have been deleted"
       chiller_plant_loop_str = "\n #{delete_existing_chiller_loops} existing Chiller PlantLoops have been deleted"
       condenser_plant_loop_str = "\n #{delete_existing_condenser_loops} existing Condenser PlantLoops have been deleted"
+    else
+      air_loop_str = ""
+      chiller_plant_loop_str = ""
+      condenser_plant_loop_str = ""
     end #end of delete_existing
-      runner.registerInitialCondition("Initially #{initial_num_air_loops_demand_control} air loops had demand controlled ventilation enabled" +
+
+    runner.registerInitialCondition("Initially #{initial_num_air_loops_demand_control} air loops had demand controlled ventilation enabled" +
                                           air_loop_str + chiller_plant_loop_str + condenser_plant_loop_str + "\n")
 
     
