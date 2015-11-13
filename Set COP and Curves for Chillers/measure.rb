@@ -40,18 +40,57 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
       chillers_handles << value.handle.to_s
       chillers_display_names << key
     end
-    chillers_handles << 'All'
-    chillers_display_names << 'All of them'
 
-    #make a choice argument for space type
+    # Make a choice argument for chiller to affect
     chiller = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("chiller", chillers_handles, chillers_display_names, true)
     chiller.setDisplayName("Select the Chiller you want to affect")
     args << chiller
 
+    # Make an optional choice argument for COP cooling
     cop_cooling = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('cop_cooling', false)
     cop_cooling.setDisplayName('COP Cooling (SI)')
     cop_cooling.setDefaultValue(5.5)
     args << cop_cooling
+
+    # Make an optional choice argument for Reference Leaving Chiller Water Temperature
+    ref_lwt = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('ref_lwt', false)
+    ref_lwt.setDisplayName('Reference Leaving Chilled Water Temperature (C)')
+    ref_lwt.setDefaultValue(6.67)
+    args << ref_lwt
+
+    # Make an optional choice argument for Reference Entering Condenser Fluid Temperature
+    ref_ect = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('ref_ect', false)
+    ref_ect.setDisplayName('Reference Entering Condenser Fluid Temperature (C)')
+    ref_ect.setDefaultValue(29.4)
+    args << ref_ect
+
+    # Make an optional choice argument for Minimum Part Load Ratio
+    min_plr = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('min_plr', false)
+    min_plr.setDisplayName('Minimum Part Load Ratio')
+    min_plr.setDescription("Below this part-load ratio, the compressor cycles on and off to meet the cooling load")
+    min_plr.setDefaultValue(0.1)
+    args << min_plr
+
+
+    # Make an optional choice argument for Maximum Part Load Ratio
+    max_plr = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('max_plr', false)
+    max_plr.setDisplayName('Maximum Part Load Ratio')
+    max_plr.setDefaultValue(1.0)
+    args << max_plr
+
+
+    # Make an optional choice argument for Optimum Part Load Ratio
+    optimum_plr = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('optimum_plr', false)
+    optimum_plr.setDisplayName('Optimum Part Load Ratio')
+    optimum_plr.setDefaultValue(1.0)
+    args << optimum_plr
+
+    # Make an optional choice argument for Minimum Unloading Ratio
+    min_unloading = OpenStudio::Ruleset::OSArgument::makeDoubleArgument('min_unloading', false)
+    min_unloading.setDisplayName('Minimum Unloading Ratio')
+    min_unloading.setDescription("The minimum unloading ratio is where the chiller capacity can no longer be reduced by unloading and must be false loaded to meet smaller cooling loads")
+    min_unloading.setDefaultValue(0.2)
+    args << min_unloading
 
 
     ##################################################
@@ -130,7 +169,7 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
 
 
 
-    #make a choice argument for space type
+    #make a choice argument for EIR-FT
     eirft_curve = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("eirft_curve", eirft_curves_handles, eirft_curves_display_names,false)
     eirft_curve.setDisplayName("Select the quadratic curve you want to use for EIRFT")
     args << eirft_curve
@@ -138,7 +177,7 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
 
 
 
-    #make a choice argument for space type
+    #make a choice argument for CAP-FT
     capft_curve = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("capft_curve", capft_curves_handles, capft_curves_display_names,false)
     capft_curve.setDisplayName("Select the quadratic curve you want to use for CAPFT")
     args << capft_curve
@@ -159,8 +198,18 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
     end
 
     # assign the user inputs to variables
-    chiller = runner.getOptionalWorkspaceObjectChoiceValue("chiller",user_arguments, model)
+    chiller = runner.getOptionalWorkspaceObjectChoiceValue("chiller", user_arguments, model)
     cop_cooling = runner.getOptionalDoubleArgumentValue("cop_cooling", user_arguments)
+
+    ref_lwt = runner.getOptionalDoubleArgumentValue("ref_lwt", user_arguments)
+    ref_ect = runner.getOptionalDoubleArgumentValue("ref_ect", user_arguments)
+
+    min_plr = runner.getOptionalDoubleArgumentValue("min_plr", user_arguments)
+    max_plr = runner.getOptionalDoubleArgumentValue("max_plr", user_arguments)
+    optimum_plr = runner.getOptionalDoubleArgumentValue("optimum_plr", user_arguments)
+    min_unloading = runner.getOptionalDoubleArgumentValue("min_unloading", user_arguments)
+
+
     eirfplr_curve = runner.getOptionalWorkspaceObjectChoiceValue("eirfplr_curve",user_arguments, model)
     eirft_curve = runner.getOptionalWorkspaceObjectChoiceValue("eirft_curve",user_arguments, model)
     capft_curve = runner.getOptionalWorkspaceObjectChoiceValue("capft_curve",user_arguments, model)
@@ -169,22 +218,12 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
     chillers = Array.new
 
     # report initial condition of model
-    if chiller.empty?
-      handle = runner.getStringArgumentValue("chiller",user_arguments)
-      if handle.empty?
-        runner.registerError("No chiller was selected.")
-        return false
-      else
-        runner.registerInitialCondition("You chose to affect all chillers")
-        chillers = model.getChillerElectricEIRs
-      end
-    else
-      if not chiller.get.to_ChillerElectricEIR.empty?
-        #If everything's alright, get the actual Thermal Zone object from the handle
-        mychiller = chiller.get.to_ChillerElectricEIR.get
-        runner.registerInitialCondition("You chose to affect the Chiller '#{mychiller.name}'")
-        chillers << mychiller
-      end
+
+    if not chiller.get.to_ChillerElectricEIR.empty?
+      #If everything's alright, get the actual Thermal Zone object from the handle
+      mychiller = chiller.get.to_ChillerElectricEIR.get
+      runner.registerInitialCondition("You chose to affect the Chiller '#{mychiller.name}'")
+      chillers << mychiller
     end
 
 
@@ -246,6 +285,42 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
         previous_cop = chiller.referenceCOP
         chiller.setReferenceCOP(cop_cooling.get)
         runner.registerInfo("Changed COP from #{previous_cop} to #{cop_cooling}")
+      end
+
+      if not ref_lwt.empty?
+        previous_ref_lwt = chiller.referenceLeavingChilledWaterTemperature
+        chiller.setReferenceLeavingChilledWaterTemperature(ref_lwt.get)
+        runner.registerInfo("Changed Reference Leaving Chilled Water temperature from #{previous_ref_lwt} to #{ref_lwt}")
+      end
+
+      if not ref_ect.empty?
+        previous_ref_ect = chiller.referenceEnteringCondenserFluidTemperature
+        chiller.setReferenceEnteringCondenserFluidTemperature(ref_ect.get)
+        runner.registerInfo("Changed Reference Entering Condenser Fluid Temperature from #{previous_ref_ect} to #{ref_ect}")
+      end
+
+      if not min_plr.empty?
+        previous_min_plr = chiller.minimumPartLoadRatio
+        chiller.setMinimumPartLoadRatio(min_plr.get)
+        runner.registerInfo("Changed Minimum Part Load Ratio from #{previous_min_plr} to #{min_plr}")
+      end
+
+      if not max_plr.empty?
+        previous_max_plr = chiller.maximumPartLoadRatio
+        chiller.setMaximumPartLoadRatio(max_plr.get)
+        runner.registerInfo("Changed Maximum Part Load Ratio from #{previous_max_plr} to #{max_plr}")
+      end
+
+      if not optimum_plr.empty?
+        previous_optimum_plr = chiller.optimumPartLoadRatio
+        chiller.setOptimumPartLoadRatio(optimum_plr.get)
+        runner.registerInfo("Changed Optimum Part Load Ratio from #{previous_optimum_plr} to #{optimum_plr}")
+      end
+
+      if not min_unloading.empty?
+        previous_min_unloading = chiller.minimumUnloadingRatio
+        chiller.setMinimumUnloadingRatio(min_unloading.get)
+        runner.registerInfo("Changed Minimum Unloading Part Load Ratio from #{previous_min_unloading} to #{min_unloading}")
       end
 
       if eirfplr

@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>set_cop_and_curves_for_chiller</name>
   <uid>351fe844-d64c-4405-a340-4145696b1dac</uid>
-  <version_id>7c28bb43-1756-466a-a26d-1c2a54d5b164</version_id>
+  <version_id>6d996ec2-3c76-47c0-b8c7-822b89749c8e</version_id>
   <xml_checksum>D48F381B</xml_checksum>
   <class_name>SetCOPAndCurvesForChiller</class_name>
   <display_name>Set COP and Curves for Chiller</display_name>
@@ -16,12 +16,6 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <choices>
-        <choice>
-          <value>All</value>
-          <display_name>All of them</display_name>
-        </choice>
-      </choices>
     </argument>
     <argument>
       <name>cop_cooling</name>
@@ -30,6 +24,56 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
       <required>false</required>
       <model_dependent>false</model_dependent>
       <default_value>5.5</default_value>
+    </argument>
+    <argument>
+      <name>ref_lwt</name>
+      <display_name>Reference Leaving Chilled Water Temperature (C)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>6.67</default_value>
+    </argument>
+    <argument>
+      <name>ref_ect</name>
+      <display_name>Reference Entering Condenser Fluid Temperature (C)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>29.4</default_value>
+    </argument>
+    <argument>
+      <name>min_plr</name>
+      <display_name>Minimum Part Load Ratio</display_name>
+      <description>Below this part-load ratio, the compressor cycles on and off to meet the cooling load</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.1</default_value>
+    </argument>
+    <argument>
+      <name>max_plr</name>
+      <display_name>Maximum Part Load Ratio</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>optimum_plr</name>
+      <display_name>Optimum Part Load Ratio</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>min_unloading</name>
+      <display_name>Minimum Unloading Ratio</display_name>
+      <description>The minimum unloading ratio is where the chiller capacity can no longer be reduced by unloading and must be false loaded to meet smaller cooling loads</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.2</default_value>
     </argument>
     <argument>
       <name>eirfplr_curve</name>
@@ -53,7 +97,12 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
-  <provenances/>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
   <tags>
     <tag>HVAC.Cooling</tag>
   </tags>
@@ -81,16 +130,16 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
   </attributes>
   <files>
     <file>
-      <filename>set_cop_and_curves_for_chiller_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>CE0951DB</checksum>
-    </file>
-    <file>
       <filename>example_model.osm</filename>
       <filetype>osm</filetype>
       <usage_type>test</usage_type>
-      <checksum>C4F35230</checksum>
+      <checksum>C85343B0</checksum>
+    </file>
+    <file>
+      <filename>set_cop_and_curves_for_chiller_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>CF7D9719</checksum>
     </file>
     <file>
       <version>
@@ -101,7 +150,7 @@ Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT 
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>EDC052A3</checksum>
+      <checksum>164EA936</checksum>
     </file>
   </files>
 </measure>

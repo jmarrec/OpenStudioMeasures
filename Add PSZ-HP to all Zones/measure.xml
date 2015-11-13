@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>add_pszhp_to_each_zone</name>
   <uid>5f126600-ca2f-4611-9121-6dfea2de49d6</uid>
-  <version_id>f7a889fe-7cea-4dba-a9d2-8bdee64a742f</version_id>
+  <version_id>91fa18da-fd3c-4c74-aadd-5daa1827169d</version_id>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AddPSZHPToEachZone</class_name>
   <display_name>Add a PSZ-HP to each zone</display_name>
@@ -155,7 +155,12 @@ Parameters:
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
-  <provenances/>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
   <tags>
     <tag>HVAC.Whole System</tag>
   </tags>
@@ -181,7 +186,7 @@ Parameters:
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>31131D1F</checksum>
+      <checksum>01CB84B0</checksum>
     </file>
   </files>
 </measure>

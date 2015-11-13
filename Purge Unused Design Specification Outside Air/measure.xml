@@ -1,6 +1,6 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>purge_unused_design_specification_outside_air</name>
+  <name>Purge Unused Design Specification Outside Air</name>
   <uid>24da0508-8832-4302-a88a-326126b010c7</uid>
   <version_id>777d79ea-af4a-48e8-a663-03dc1ee25c6d</version_id>
   <xml_checksum>266557E5</xml_checksum>
@@ -20,7 +20,12 @@ For each DSOA, it checks the instance.directUseCount and if not used, deletes th
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
-  <provenances/>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
   <tags>
     <tag>HVAC.Ventilation</tag>
   </tags>

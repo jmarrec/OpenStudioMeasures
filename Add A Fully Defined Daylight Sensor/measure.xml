@@ -1,10 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>add_fully_defined_daylight_sensor</name>
+  <name>Add A Fully Defined Lighting Sensor</name>
   <uid>182f9bb1-68cf-4b28-bcad-7c6749e1961b</uid>
-  <version_id>4ada161d-7da1-461e-8dda-3eee72a0a862</version_id>
+  <version_id>2c308ac6-171e-4816-9f05-6c04fd24a4e0</version_id>
   <xml_checksum>81C5D8E7</xml_checksum>
-  <class_name>AddFullyDefinedDaylightSensor</class_name>
+  <class_name>AddAFullyDefinedDaylightSensor</class_name>
   <display_name>Add Fully Defined Daylight Sensor to a zone</display_name>
   <description>This measure adds a fully defined daylight sensor based on all input parameters (X,Y,Z, etc).</description>
   <modeler_description>Place the daylight sensor in sketchup as needed to get the required parameters. You'll need these values to use this measure.
@@ -16,6 +16,33 @@ This measure is only intended to make it possible to use in PAT for example and 
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>is_primary</name>
+      <display_name>Is it the primary lighting control?</display_name>
+      <description>If false, the secondaryLightingControl will be affected</description>
+      <type>Boolean</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>true</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>fraction_controlled</name>
+      <display_name>Fraction of Zone lighting controlled by this daylight control</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
     </argument>
     <argument>
       <name>setpoint</name>
@@ -100,7 +127,12 @@ This measure is only intended to make it possible to use in PAT for example and 
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
-  <provenances/>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
   <tags>
     <tag>Electric Lighting.Electric Lighting Controls</tag>
   </tags>
@@ -148,7 +180,7 @@ This measure is only intended to make it possible to use in PAT for example and 
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>CADFDCC5</checksum>
+      <checksum>6E6097E3</checksum>
     </file>
   </files>
 </measure>

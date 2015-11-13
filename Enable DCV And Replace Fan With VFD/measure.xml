@@ -1,6 +1,6 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>enable_dcv_and_replace_fan_with_vfd</name>
+  <name>Enable DCV And Replace Fan With VFD</name>
   <uid>c40878ac-f0f3-4600-98d6-d43af9a8ac1c</uid>
   <version_id>b94d0ec0-3040-4e06-b2eb-89bf516ce596</version_id>
   <xml_checksum>266557E5</xml_checksum>
@@ -46,7 +46,12 @@
       </choices>
     </argument>
   </arguments>
-  <provenances/>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
   <tags>
     <tag>HVAC.Ventilation</tag>
   </tags>

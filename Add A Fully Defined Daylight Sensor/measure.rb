@@ -1,8 +1,8 @@
-# see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
+# Author: Julien Marrec
+# email: julien.marrec@gmail.com
 
 # start the measure
-class AddFullyDefinedDaylightSensor < OpenStudio::Ruleset::ModelUserScript
+class AddAFullyDefinedDaylightSensor < OpenStudio::Ruleset::ModelUserScript
 
   # human readable name
   def name
@@ -19,6 +19,47 @@ class AddFullyDefinedDaylightSensor < OpenStudio::Ruleset::ModelUserScript
     return "Place the daylight sensor in sketchup as needed to get the required parameters. You'll need these values to use this measure.
 This measure is only intended to make it possible to use in PAT for example and avoid needing to define an additional OSM just to add daylight as wanted."
   end
+
+  def create_sensor(model, zone, is_primary, fraction_controlled, x_pos_si, y_pos_si, z_pos_si, phi, setpoint_si, control_type, min_power_fraction, min_light_fraction)
+    #create a new sensor and put at the center of the space
+    sensor = OpenStudio::Model::DaylightingControl.new(model)
+    if is_primary
+      sensor.setName("#{zone.name} Primary daylighting control")
+    else
+      sensor.setName("#{zone.name} Secondary daylighting control")
+    end
+
+
+    # Create a new Point3d to put sensor where needed (set in SI units)
+    # new_point = OpenStudio::Point3d.new(x_pos_si, y_pos_si, z_pos_si)
+    new_point = OpenStudio::Point3d.new(x_pos_si.value, y_pos_si.value, z_pos_si.value)
+    sensor.setPosition(new_point)
+
+    # Set the Phi rotation around Z-Axis
+    sensor.setPhiRotationAroundZAxis(phi)
+
+    # Assign the illuminance (has to be set in SI units)
+    sensor.setIlluminanceSetpoint(setpoint_si.value)
+
+    # Assign the rest
+    sensor.setLightingControlType(control_type)
+    sensor.setMinimumInputPowerFractionforContinuousDimmingControl(min_power_fraction)
+    sensor.setMinimumLightOutputFractionforContinuousDimmingControl(min_light_fraction)
+
+    # Right now I just dump it into the first space I find... This could be a problem if you do use multiple spaces into one thermal zone. (/!\Is it really needed? might only apply if radiance as engine)
+    zone_space = zone.spaces[0]
+    puts "zone_space in zone: #{zone_space.name}, handle: #{zone_space.handle}"
+    sensor.setSpace(zone_space)
+
+    zone.setPrimaryDaylightingControl(sensor)
+
+    # Set fraction controlled
+    zone.setFractionofZoneControlledbyPrimaryDaylightingControl(fraction_controlled)
+
+    return sensor
+
+  end
+
 
   # define the arguments that the user will input
   def arguments(model)
@@ -44,10 +85,27 @@ This measure is only intended to make it possible to use in PAT for example and 
       end
     end
 
-    #make a choice argument for space type
+    #make a choice argument for zone
     zone = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("zone", zone_handles, zone_display_names,true)
     zone.setDisplayName("Add Daylight Sensor to this Thermal Zone")
     args << zone
+
+
+
+    #make an argument to determine if primary or secondary
+    is_primary = OpenStudio::Ruleset::OSArgument::makeBoolArgument("is_primary",true)
+    is_primary.setDisplayName("Is it the primary lighting control?")
+    is_primary.setDefaultValue(true)
+    is_primary.setDescription("If false, the secondaryLightingControl will be affected")
+    args << is_primary
+
+    #make an argument for fraction of lights controlled
+    fraction_controlled = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("fraction_controlled",true)
+    fraction_controlled.setDisplayName("Fraction of Zone lighting controlled by this daylight control")
+    fraction_controlled.setDefaultValue(1)
+    args << fraction_controlled
+
+
 
     #make an argument for setpoint
     setpoint = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("setpoint",true)
@@ -116,6 +174,9 @@ This measure is only intended to make it possible to use in PAT for example and 
 
     #assign the user inputs to variables
     zone = runner.getOptionalWorkspaceObjectChoiceValue("zone",user_arguments,model)
+    is_primary = runner.getBoolArgumentValue("is_primary",user_arguments)
+    fraction_controlled = runner.getDoubleArgumentValue("fraction_controlled",user_arguments)
+
     setpoint = runner.getDoubleArgumentValue("setpoint",user_arguments)
     control_type = runner.getStringArgumentValue("control_type",user_arguments)
     min_power_fraction = runner.getDoubleArgumentValue("min_power_fraction",user_arguments)
@@ -143,6 +204,12 @@ This measure is only intended to make it possible to use in PAT for example and 
       else
         runner.registerError("Script Error - argument not showing up as ThermalZone type.")
       end
+    end
+
+    #check the fraction of lights controlled
+    if fraction_controlled < 0.0 or fraction_controlled > 1.0
+      runner.registerError("The requested Fraction of Zone Lights controlled of #{fraction_controlled} is outside the acceptable range of 0 to 1.")
+      return false
     end
     
     #check the setpoint for reasonableness
@@ -196,56 +263,71 @@ This measure is only intended to make it possible to use in PAT for example and 
     x_pos_si = OpenStudio::convert(x_pos_ip, unit_length_si).get
     y_pos_si = OpenStudio::convert(y_pos_ip, unit_length_si).get
     z_pos_si = OpenStudio::convert(z_pos_ip, unit_length_si).get
-
-    #variable to tally the area to which the overall measure is applied
-    area = 0
-    #variables to aggregate the number of sensors installed and the area affected
-    sensor_count = 0
-    sensor_area = 0
  
     
  
     #reporting initial condition of model
     runner.registerInitialCondition("Will try to add a daylight sensor to '#{zone.name}'.")
 
+    if (is_primary and zone.primaryDaylightingControl.empty?) or (not is_primary and zone.secondaryDaylightingControl.empty?)
 
-    #Test that zone object doesn't already have sensors assigned.
-    if zone.primaryDaylightingControl.empty? and zone.secondaryDaylightingControl.empty?
-    
       #create a new sensor and put at the center of the space
       sensor = OpenStudio::Model::DaylightingControl.new(model)
       sensor.setName("#{zone.name} daylighting control")
-      
+
       # Create a new Point3d to put sensor where needed (set in SI units)
       # new_point = OpenStudio::Point3d.new(x_pos_si, y_pos_si, z_pos_si)
       new_point = OpenStudio::Point3d.new(x_pos_si.value, y_pos_si.value, z_pos_si.value)
       sensor.setPosition(new_point)
-      
+
       # Set the Phi rotation around Z-Axis
       sensor.setPhiRotationAroundZAxis(phi)
-      
+
       # Assign the illuminance (has to be set in SI units)
       sensor.setIlluminanceSetpoint(setpoint_si.value)
-      
+
       # Assign the rest
       sensor.setLightingControlType(control_type)
       sensor.setMinimumInputPowerFractionforContinuousDimmingControl(min_power_fraction)
       sensor.setMinimumLightOutputFractionforContinuousDimmingControl(min_light_fraction)
-          
+
+      # Right now I just dump it into the first space I find... This could be a problem if you do use multiple spaces into one thermal zone. (/!\Is it really needed? might only apply if radiance as engine)
       zone_space = zone.spaces[0]
       runner.registerInfo("zone_space in zone: #{zone_space.name}, handle: #{zone_space.handle}")
       sensor.setSpace(zone_space)
-      
-      # Assign the sensor as a Primary Daylighting Control to the Thermal Zone (/!\Is it really needed?)
-      zone.setPrimaryDaylightingControl(sensor)
-    
+
+      if is_primary
+        # Assign the sensor as a Primary Daylighting Control to the Thermal Zone
+        zone.setPrimaryDaylightingControl(sensor)
+
+        # Set fraction controlled
+        zone.setFractionofZoneControlledbyPrimaryDaylightingControl(fraction_controlled)
+      else
+
+        primary_fraction = zone.fractionofZoneControlledbyPrimaryDaylightingControl
+        total_fraction = fraction_controlled + primary_fraction
+        if total_fraction > 1
+          runner.registerError("The sum of Primary Fraction (#{primary_fraction}) and the desired Secondary Fraction (#{fraction_controlled}) of Zone lights controlled exceeds 1!")
+          return false
+        end
+
+        # Assign the sensor as a Primary Daylighting Control to the Thermal Zone
+        zone.setSecondaryDaylightingControl(sensor)
+
+        # Set fraction controlled
+        zone.setFractionofZoneControlledbySecondaryDaylightingControl(fraction_controlled)
+      end
+
     else
-      runner.registerWarning("Thermal zone '#{zone.name}' already had a daylighting sensor. No sensor was added.")
+        runner.registerWarning("Thermal zone '#{zone.name}' already had a daylighting sensor. No sensor was added.")
     end #end if
+
+
       
 
     # Report final condition of model
     runner.registerFinalCondition("Added a daylighting sensor to #{zone.name}. Here is the sensor definition \n\n #{sensor}")
+    puts zone.to_s
 
     return true
 
@@ -254,4 +336,4 @@ This measure is only intended to make it possible to use in PAT for example and 
 end #end class
 
 # register the measure to be used by the application
-AddFullyDefinedDaylightSensor.new.registerWithApplication
+AddAFullyDefinedDaylightSensor.new.registerWithApplication

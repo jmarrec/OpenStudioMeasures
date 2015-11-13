@@ -41,7 +41,11 @@ class SetCOPAndCurvesForChillerTest < MiniTest::Unit::TestCase
 
     # create hash of argument values
     args_hash = {}
-    args_hash["space_name"] = ""
+    args_hash["chiller"] = ""
+    args_hash["cop_cooling"] = ""
+    args_hash["eirfplr_curve"] = ""
+    args_hash["eirft_curve"] = ""
+    args_hash["capft_curve"] = ""
 
     # populate argument with specified hash value if specified
     arguments.each do |arg|

@@ -2,12 +2,22 @@
 ## Selected Folders   ##
 ########################
 
+# This is my list of public measures
+
 /*
+
+!/Add A Fully Defined Daylight Sensor/
+
 !/Add PSZ-HP to all Zones/
-!/enable_dcv_and_vfd_fan/
-!/add_fully_defined_daylight_sensor/
-!/purge_unused_design_specification_outside_air/
-!/append_suffix_to_thermal_zone_name/
+
+!/Create a WaterHeaterMixed and assign its source and use sides/
+
+!/Enable DCV And Replace Fan With VFD/
+
+!/Purge Unused Design Specification Outside Air/
+
+!/Append Suffix to Thermal Zone Name/
+
 !/Set COP and Curves for Chillers/
 
 ######################################

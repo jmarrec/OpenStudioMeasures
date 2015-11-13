@@ -1,7 +1,7 @@
 
 OS:Version,
-  {42fd8b60-e9fb-40ec-9458-6fb439032475}, !- Handle
-  1.6.0;                                  !- Version Identifier
+  {79934dfa-d2b4-4fed-b444-477a88c3043f}, !- Handle
+  1.8.0;                                  !- Version Identifier
 
 OS:SpaceType,
   {d83c9d8c-b4ea-4352-92bc-43a5e8551039}, !- Handle

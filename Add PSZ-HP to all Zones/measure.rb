@@ -1,7 +1,6 @@
 # Author: Julien Marrec
 # email: julien.marrec@gmail.com
 
-
 # start the measure
 class AddPSZHPToEachZone < OpenStudio::Ruleset::ModelUserScript
   
@@ -212,7 +211,10 @@ Parameters:
         end
       end
 
-
+      if zones.empty?
+        runner.registerError("Your zone filter #{zone_filter} did not match anything")
+        return false
+      end
 
     end # End of if filter_type
 
