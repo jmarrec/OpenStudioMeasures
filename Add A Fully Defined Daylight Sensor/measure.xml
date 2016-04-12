@@ -1,0 +1,186 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>add_a_fully_defined_daylight_sensor</name>
+  <uid>182f9bb1-68cf-4b28-bcad-7c6749e1961b</uid>
+  <version_id>825fa924-7c30-4cea-8438-f8a981b89840</version_id>
+  <xml_checksum>81C5D8E7</xml_checksum>
+  <class_name>AddAFullyDefinedDaylightSensor</class_name>
+  <display_name>Add Fully Defined Daylight Sensor to a zone</display_name>
+  <description>This measure adds a fully defined daylight sensor based on all input parameters (X,Y,Z, etc).</description>
+  <modeler_description>Place the daylight sensor in sketchup as needed to get the required parameters. You'll need these values to use this measure.
+This measure is only intended to make it possible to use in PAT for example and avoid needing to define an additional OSM just to add daylight as wanted.</modeler_description>
+  <arguments>
+    <argument>
+      <name>zone</name>
+      <display_name>Add Daylight Sensor to this Thermal Zone</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>is_primary</name>
+      <display_name>Is it the primary lighting control?</display_name>
+      <description>If false, the secondaryLightingControl will be affected</description>
+      <type>Boolean</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>true</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>fraction_controlled</name>
+      <display_name>Fraction of Zone lighting controlled by this daylight control</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>setpoint</name>
+      <display_name>Daylighting Setpoint (fc)</display_name>
+      <description>1 fc = 10.76 lux. Default of 46.45 fc is 500 lux</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>46.45</default_value>
+    </argument>
+    <argument>
+      <name>control_type</name>
+      <display_name>Daylighting Control Type</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>Continuous/Off</default_value>
+      <choices>
+        <choice>
+          <value>None</value>
+          <display_name>None</display_name>
+        </choice>
+        <choice>
+          <value>Continuous</value>
+          <display_name>Continuous</display_name>
+        </choice>
+        <choice>
+          <value>Stepped</value>
+          <display_name>Stepped</display_name>
+        </choice>
+        <choice>
+          <value>Continuous/Off</value>
+          <display_name>Continuous/Off</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>min_power_fraction</name>
+      <display_name>Daylighting Minimum Input Power Fraction(min = 0 max = 0.6)</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.3</default_value>
+    </argument>
+    <argument>
+      <name>min_light_fraction</name>
+      <display_name>Daylighting Minimum Light Output Fraction (min = 0 max = 0.6)</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.2</default_value>
+    </argument>
+    <argument>
+      <name>x_pos</name>
+      <display_name>Position X-Coordinate (ft)</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>y_pos</name>
+      <display_name>Position Y-Coordinate (ft)</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>z_pos</name>
+      <display_name>Position Z-Coordinate (ft)</display_name>
+      <description>Sensor Height from floor. Default value is 2.5 ft / 30 inches / 76.2 cm</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>2.5</default_value>
+    </argument>
+    <argument>
+      <name>phi</name>
+      <display_name>Phi Rotation around Z-axis</display_name>
+      <description>Sensor rotation around the Z-axis, defines the direction towards which the sensor is looking. We assume Psi and Theta rotation = 0</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
+  <tags>
+    <tag>Electric Lighting.Electric Lighting Controls</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>example_model.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>C4F35230</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.7.0</identifier>
+        <min_compatible>1.7.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>8C90FBDA</checksum>
+    </file>
+    <file>
+      <filename>add_a_fully_defined_daylight_sensor_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>E1B7C516</checksum>
+    </file>
+  </files>
+</measure>

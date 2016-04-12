@@ -1,0 +1,174 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>set_cop_and_curves_for_chiller</name>
+  <uid>351fe844-d64c-4405-a340-4145696b1dac</uid>
+  <version_id>f8978253-8b35-46f4-a3fd-7bf8bdba6ea0</version_id>
+  <version_modified>20160224T164918</version_modified>
+  <xml_checksum>D48F381B</xml_checksum>
+  <class_name>SetCOPAndCurvesForChiller</class_name>
+  <display_name>Set COP and Curves for Chiller</display_name>
+  <description>Set COP and Curves for Chiller</description>
+  <modeler_description>So far it will only look for chillers of type Chiller:Electric:EIR.
+Also, it will only accept for EIRFPLR a quadratic or cubic curve, and for EIRFT and CAPFT a biquadratic or bicubic, but modifying it is easy</modeler_description>
+  <arguments>
+    <argument>
+      <name>chiller</name>
+      <display_name>Select the Chiller you want to affect</display_name>
+      <description>Leave blank to affect all chillers in the model</description>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>ref_capacity</name>
+      <display_name>Reference Capacity {W}</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>cop_cooling</name>
+      <display_name>COP Cooling (SI)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>5.5</default_value>
+    </argument>
+    <argument>
+      <name>ref_lwt</name>
+      <display_name>Reference Leaving Chilled Water Temperature (C)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>6.67</default_value>
+    </argument>
+    <argument>
+      <name>ref_ect</name>
+      <display_name>Reference Entering Condenser Fluid Temperature (C)</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>29.4</default_value>
+    </argument>
+    <argument>
+      <name>ref_chw_flow_rate</name>
+      <display_name>Reference Chilled Water Flow Rate {m3/s}</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>ref_cndw_flow_rate</name>
+      <display_name>Reference Condenser Fluid Flow Rate {m3/s}</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>min_plr</name>
+      <display_name>Minimum Part Load Ratio</display_name>
+      <description>Below this part-load ratio, the compressor cycles on and off to meet the cooling load</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.1</default_value>
+    </argument>
+    <argument>
+      <name>max_plr</name>
+      <display_name>Maximum Part Load Ratio</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>optimum_plr</name>
+      <display_name>Optimum Part Load Ratio</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>min_unloading</name>
+      <display_name>Minimum Unloading Ratio</display_name>
+      <description>The minimum unloading ratio is where the chiller capacity can no longer be reduced by unloading and must be false loaded to meet smaller cooling loads</description>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.2</default_value>
+    </argument>
+    <argument>
+      <name>eirfplr_curve</name>
+      <display_name>Select the quadratic curve you want to use for EIRFPLR</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>eirft_curve</name>
+      <display_name>Select the quadratic curve you want to use for EIRFT</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>capft_curve</name>
+      <display_name>Select the quadratic curve you want to use for CAPFT</display_name>
+      <type>Choice</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>HVAC.Cooling</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>example_model.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>C85343B0</checksum>
+    </file>
+    <file>
+      <filename>set_cop_and_curves_for_chiller_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>CF7D9719</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.8.0</identifier>
+        <min_compatible>1.8.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>86B8645C</checksum>
+    </file>
+  </files>
+</measure>

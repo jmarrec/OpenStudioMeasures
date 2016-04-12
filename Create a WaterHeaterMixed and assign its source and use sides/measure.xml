@@ -1,0 +1,99 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>create_a_water_heater_mixed_and_assign_its_source_and_use_sides</name>
+  <uid>1e47ad1f-9c58-4415-a65d-fb9ab8666565</uid>
+  <version_id>5dc5de8b-88b5-45f5-b495-847c38dee3eb</version_id>
+  <xml_checksum>14380108</xml_checksum>
+  <class_name>CreateAWaterHeaterMixedAndAssignItsSourceAndUseSides</class_name>
+  <display_name>Create a WaterHeaterMixed and assign its source and use sides to the specifed plant loop</display_name>
+  <description>Creates a WaterHeater:Mixed, and you can specify which plant loop is on its source side and which one is on its use side.</description>
+  <modeler_description>See above</modeler_description>
+  <arguments>
+    <argument>
+      <name>tank_name</name>
+      <display_name>Name of WaterHeater:Mixed</display_name>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>source_loop</name>
+      <display_name>Select SOURCE side plant loop (boiler loop)</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>use_loop</name>
+      <display_name>Select USE side plant loop (secondary loop)</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances>
+    <provenance>
+      <author>Julien Marrec</author>
+    </provenance>
+    <provenance_required>true</provenance_required>
+  </provenances>
+  <tags>
+    <tag>HVAC.Distribution</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Model Articulation</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.8.0</identifier>
+        <min_compatible>1.8.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>262C6863</checksum>
+    </file>
+    <file>
+      <filename>create_a_water_heater_mixed_and_assign_its_source_and_use_sides_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>F0F1FA56</checksum>
+    </file>
+  </files>
+</measure>
